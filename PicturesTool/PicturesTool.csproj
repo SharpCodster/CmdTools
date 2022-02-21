@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CmdTools.Core\CmdTools.Core.csproj" />
+    <ProjectReference Include="..\PicturesTool.Core\PicturesTool.Core.csproj" />
   </ItemGroup>
 
 </Project>

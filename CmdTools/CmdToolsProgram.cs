@@ -12,11 +12,11 @@ namespace CmdTools
             // Pictures Tool
             AddPage(new PicturesToolMainPage(this, ioWrapper));
             AddPage(new MoveRenameMergeWizard(this, ioWrapper));
-            //AddPage(new MoveFiles(this));
-            //AddPage(new RenameFiles(this));
-            //AddPage(new CopyPicturesBetweenUsers(this));
-            //AddPage(new Page2(this));
-            //AddPage(new InputPage(this));
+            AddPage(new MoveFiles(this, ioWrapper));
+            AddPage(new RenameFiles(this, ioWrapper));
+            AddPage(new CopyPicturesBetweenUsers(this, ioWrapper));
+            //AddPage(new Page2(this, ioWrapper));
+            //AddPage(new InputPage(this, ioWrapper));
 
             SetPage<MainPage>();
         }

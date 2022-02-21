@@ -25,7 +25,7 @@ namespace PicturesTool
 
             settingManager.SaveToConfigFile(settings);
 
-            //Program.NavigateTo<MoveFiles>();
+            Program.NavigateTo<MoveFiles>();
         }
 
 
@@ -34,69 +34,43 @@ namespace PicturesTool
             // per ogni utente: confirm, update, delete
             // alla fine chiedo se vuole aggiungerne uno
 
-            IOWrapper.WriteLine("Users:");
-            IOWrapper.WriteLine("");
-
-            IOWrapper.WriteLine($"Currently are {settings.MoveAndOrganize.Users.Count} users stored in config file");
+            IOWrapper.WriteLine("[lightcoral]Users:[/]");
 
             var users = String.Join("; ", settings.MoveAndOrganize.Users.Select(v => v.Username));
 
-            IOWrapper.WriteLine($"[ {users} ]");
+            IOWrapper.WriteLine($"Currently are [green]{settings.MoveAndOrganize.Users.Count} [[{users}]][/] users stored in config file");
+            IOWrapper.WriteLine("");
 
 
             foreach (var user in settings.MoveAndOrganize.Users)
             {
                 CheckUserData(user);
-
-                
-
-
-            //        Output.WriteLine($"OneDrive folder: {userArray[i - 1].OneDrivePath}");
-            //        var readedsring = Input.ReadString("Insert new path or press [Enter] to confirm: ");
-
-            //        if (!String.IsNullOrEmpty(readedsring))
-            //        {
-            //            if (Directory.Exists(readedsring))
-            //            {
-            //                userArray[i - 1].OneDrivePath = readedsring;
-            //            }
-            //        }
-            //        Output.WriteLine("");
-
-            //        Output.WriteLine($"Camera Roll folder: {userArray[i - 1].CameraRolFolder}");
-            //        readedsring = Input.ReadString("Insert new path or press [Enter] to confirm: ");
-
-            //        if (!String.IsNullOrEmpty(readedsring))
-            //        {
-            //            userArray[i - 1].CameraRolFolder = readedsring;
-            //        }
-            //        Output.WriteLine("");
             }
-
-            //    Console.Clear();
-            //    base.Display();
         }
 
         private void CheckUserData(OneDriveSettings userSettings)
         {
-            IOWrapper.WriteLine($"User data:");
-            IOWrapper.WriteLine("");
-
+            IOWrapper.WriteLine($"[lightcoral]User data:[/]");
             IOWrapper.WriteLine($"Username: {userSettings.Username}");
-            IOWrapper.WriteLine($"Username: {userSettings.OneDrivePicturesFolderPath}");
-            IOWrapper.WriteLine($"Username: {userSettings.CameraRolFolderName}");
+            IOWrapper.WriteLine($"OneDrive picture path: {userSettings.OneDrivePicturesFolderPath}");
+            IOWrapper.WriteLine($"Camera Roll folder name: {userSettings.CameraRolFolderName}");
             IOWrapper.WriteLine("");
 
             Menu menu = new Menu(IOWrapper);
 
             menu.Add(new Option("Continue", null));
-            menu.Add(new Option("Edit", null));
-            menu.Add(new Option("Delete", null));
+            menu.Add(new Option("Edit", () => EdituserData(userSettings)));
+            //menu.Add(new Option("Delete", null));
 
             menu.Display("");
         }
 
-
+        private void EdituserData(OneDriveSettings userSettings)
+        {
+            userSettings.Username = IOWrapper.ReadString("Username:");
+            userSettings.OneDrivePicturesFolderPath = IOWrapper.ReadString("OneDrive picture path:");
+            userSettings.CameraRolFolderName = IOWrapper.ReadString("Camera Roll folder name:");
+        }
 
 
         private void CheckYearAndNMonth(UserSettings settings)
@@ -111,30 +85,11 @@ namespace PicturesTool
                 settings.MoveAndOrganize.Month++;
             }
 
-            IOWrapper.WriteLine("Month and Year:");
+            IOWrapper.WriteLine("[lightcoral]Month and Year:[/]");
+            settings.MoveAndOrganize.Year = IOWrapper.ReadInt("Insert year: ", settings.MoveAndOrganize.Year, 1900, DateTime.Now.Year);
+            settings.MoveAndOrganize.Month = IOWrapper.ReadInt("Insert month: ", settings.MoveAndOrganize.Month, 1, 12);
+
             IOWrapper.WriteLine("");
-
-
-
-
-
-
-            IOWrapper.WriteLine($"Year: {settings.MoveAndOrganize.Year}");
-            int? newYear = IOWrapper.ReadInt("Insert year: ", settings.MoveAndOrganize.Year, 1900, DateTime.Now.Year);
-            if(newYear != null)
-            {
-                settings.MoveAndOrganize.Year = (int)newYear;
-            }
-            IOWrapper.WriteLine("");
-
-            IOWrapper.WriteLine($"Month: {settings.MoveAndOrganize.Month}");
-            var newMonth = IOWrapper.ReadInt("Insert new month or press  to confirm: ", settings.MoveAndOrganize.Month, 1, 12);
-            if (newMonth != null)
-            {
-                settings.MoveAndOrganize.Month = (int)newMonth;
-            }
-            IOWrapper.WriteLine("");
-
         }
 
     }

@@ -60,8 +60,9 @@
                 _ioWrapper.WriteException(e);
             }
             finally
-            {
-                _ioWrapper.ReadString("Press [Enter] to exit");
+            { 
+                // return to main page?
+                _ioWrapper.GetConfirmation("Press [[Enter]] to exit");
             }
         }
 

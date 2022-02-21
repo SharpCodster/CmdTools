@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdTools.Core", "CmdTools.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicturesTool", "PicturesTool\PicturesTool.csproj", "{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicturesTool.Core", "PicturesTool.Core\PicturesTool.Core.csproj", "{497FFAED-BB2D-47B4-ABBB-999EF008599B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
