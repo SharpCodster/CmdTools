@@ -33,23 +33,50 @@ namespace PicturesTool
             // Mergiare i file delle folter (fam) in temp nell'anno utente 1
             // Mergiare i file delle folter (fam) in temp nell'anno utente 2
 
-
-            if (IOWrapper.GetConfirmation($"Confirm moving temp sub folders to destination folder?"))
+            foreach (var user in settings.MoveAndOrganize.Users)
             {
-                foreach (var user in settings.MoveAndOrganize.Users)
+                IOWrapper.WriteLine($"Moving User [green]{user.Username}[/] pictures");
+
+                if (IOWrapper.GetConfirmation($"Confirm moving pictures from temp folder to destination folder?"))
                 {
-                    if (IOWrapper.GetConfirmation($"Skip user [green]{user.Username}[/]?", false))
-                    {
-                        IOWrapper.WriteLine("");
-                        IOWrapper.WriteLine($"Moving User [green]{user.Username}[/] pictures");
-                        MoveFileForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
-                    }
+                    IOWrapper.WriteLine("");
+                    MoveFileForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
+                }
+
+                if (IOWrapper.GetConfirmation($"Confirm moving folders (no fam) from temp folder to destination folder?"))
+                {
+                    IOWrapper.WriteLine("");
+                    MoveFolderForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
                 }
             }
 
+            if (IOWrapper.GetConfirmation($"Confirm copying fam folders from User [green]{settings.MoveAndOrganize.Users[0].Username}[/] to [green]{settings.MoveAndOrganize.Users[1].Username}[/]?"))
+            {
+                IOWrapper.WriteLine("");
+                CopyFolderForUserFam(settings.MoveAndOrganize.Users[0], settings.MoveAndOrganize.Users[1], settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
+            }
 
+            if (IOWrapper.GetConfirmation($"Confirm copying fam folders from User [green]{settings.MoveAndOrganize.Users[1].Username}[/] to [green]{settings.MoveAndOrganize.Users[0].Username}[/]?"))
+            {
+                IOWrapper.WriteLine("");
+                CopyFolderForUserFam(settings.MoveAndOrganize.Users[1], settings.MoveAndOrganize.Users[0], settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
+            }
 
-            Program.NavigateHome();
+            foreach (var user in settings.MoveAndOrganize.Users)
+            {
+                IOWrapper.WriteLine($"Moving User fam [green]{user.Username}[/] pictures");
+
+                if (IOWrapper.GetConfirmation($"Confirm moving folders (fam) from temp folder to destination folder?"))
+                {
+                    IOWrapper.WriteLine("");
+                    MoveFolderForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month, true);
+                }
+            }
+
+            if (IOWrapper.GetConfirmation($"Done! Do you want go to home?"))
+            {
+                Program.NavigateHome();
+            }
         }
 
         private void MoveFileForUser(OneDriveSettings user, int year, int month)
@@ -59,12 +86,12 @@ namespace PicturesTool
             MoveOrCopyFilesInDirs(sourceDir, destDir, true);
         }
 
-        private void MoveFolderForUser(OneDriveSettings user, int year, int month)
+        private void MoveFolderForUser(OneDriveSettings user, int year, int month, bool fam = false)
         {
             string sourceDir = Path.Combine(user.OneDrivePicturesFolderPath, $"{year}_{month}");
             var allDirs = Directory.EnumerateDirectories(sourceDir);
 
-            var dirs = allDirs.Where(v => !v.EndsWith("(fam)"));
+            var dirs = allDirs.Where(v => v.EndsWith("(fam)") == fam);
 
             string destDir = Path.Combine(user.OneDrivePicturesFolderPath, $"{year}");
 

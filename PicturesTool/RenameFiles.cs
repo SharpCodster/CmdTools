@@ -27,11 +27,11 @@ namespace PicturesTool
             {
                 foreach (var user in settings.MoveAndOrganize.Users)
                 {
-                    if (IOWrapper.GetConfirmation($"Skip user [green]{user.Username}[/]?", false))
+                    IOWrapper.WriteLine($"Renaming User [green]{user.Username}[/] pictures");
+                    RenameFilesForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
+
+                    if (IOWrapper.GetConfirmation($"Press [[Enter]] when ready."))
                     {
-                        IOWrapper.WriteLine("");
-                        IOWrapper.WriteLine($"Renaming User [green]{user.Username}[/] pictures");
-                        RenameFilesForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
                     }
                 }
             }

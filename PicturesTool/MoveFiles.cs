@@ -26,12 +26,8 @@ namespace PicturesTool
             {
                 foreach (var user in settings.MoveAndOrganize.Users)
                 {
-                    if (IOWrapper.GetConfirmation($"Skip user [green]{user.Username}[/]?", false))
-                    {
-                        IOWrapper.WriteLine("");
-                        IOWrapper.WriteLine($"Moving User [green]{user.Username}[/] pictures");
-                        MoveFileForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
-                    }
+                    IOWrapper.WriteLine($"Moving User [green]{user.Username}[/] pictures");
+                    MoveFileForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
                 }
             }
 
