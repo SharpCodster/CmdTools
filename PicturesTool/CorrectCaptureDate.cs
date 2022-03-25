@@ -5,28 +5,52 @@ using Spectre.Console;
 
 namespace PicturesTool
 {
-    public class MoveFiles : Page
+    public class CorrectCaptureDate : Page
     {
-        public MoveFiles(ICmdWizard program, IIOWrapper ioWrapper)
-            : base("Moving files", program, ioWrapper)
+        public CorrectCaptureDate(ICmdWizard program, IIOWrapper ioWrapper)
+            : base("Correct Capture Date", program, ioWrapper)
         {
         }
 
         protected override void DisplayContent()
         {
-            UserSettingsManager settingManager = new UserSettingsManager();
-            var settings = settingManager.ReadFromConfigFile();
+            string folderPath = IOWrapper.ReadString("Insert folder path:");
 
-            if (IOWrapper.GetConfirmation($"Confirm moving pictures from Camera Roll to Temp folder?"))
+            int newYear = IOWrapper.ReadInt("Insert new year:", DateTime.Now.Year, 1901, DateTime.Now.Year);
+            int newMonth = IOWrapper.ReadInt("Insert new month:", DateTime.Now.Month, 1, 12);
+            int newDay = IOWrapper.ReadInt("Insert new day:", DateTime.Now.Day, 1, 31);
+
+            IOWrapper.WriteLine($"Start searching pictures...");
+
+            DirectoryInfo dir = new DirectoryInfo(folderPath);
+            var filesFound = Pictures.ReadFiles(dir);
+
+            IOWrapper.WriteLine($"Found [green]{filesFound.Count}[/] pictures");
+
+            IOWrapper.WriteLine(String.Format("\n{0,-30} {1,-30}\n", "Old Date", "New Date"));
+
+            foreach (var item in filesFound)
             {
-                foreach (var user in settings.MoveAndOrganize.Users)
-                {
-                    IOWrapper.WriteLine($"Moving User [green]{user.Username}[/] pictures");
-                    MoveFileForUser(user, settings.MoveAndOrganize.Year, settings.MoveAndOrganize.Month);
-                }
+                //if (item.File.Name.StartsWith("20161004") && item.File.Extension == ".mp4")
+                //{
+                DateTime oldDate = item.GetCaptureDate();
+                DateTime newDate = new DateTime(newYear, newMonth, newDay, oldDate.Hour, oldDate.Minute, oldDate.Second, oldDate.Millisecond);//GetNewDate(oldDate);
+
+                item.SetNewCaptureDate(newDate);
+                item.Rename();
+
+                IOWrapper.WriteLine(String.Format("{0,-30} {1,-30}", oldDate.ToString(), newDate.ToString()));
+                //}
             }
 
-            Program.NavigateTo<RenameFiles>();
+            IOWrapper.WriteLine("\n");
+
+            if (IOWrapper.GetConfirmation($"Done. Go home?"))
+            {
+
+            }
+
+            Program.NavigateHome();
         }
 
         private void MoveFileForUser(OneDriveSettings oneDrive, int year, int month)

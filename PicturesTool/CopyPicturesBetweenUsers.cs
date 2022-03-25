@@ -1,12 +1,6 @@
 ﻿using CmdTools.Core.CmdMenuAndPages;
 using CmdTools.Core.UserSettings;
-using PicturesTool.Core.Logics;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PicturesTool
 {
@@ -23,15 +17,6 @@ namespace PicturesTool
             var settings = settingManager.ReadFromConfigFile();
 
             IOWrapper.WriteLine("[red]Before start remeber to organize files in folders, with (fam) at the end for family pictures![/]");
-
-            // spostare file nella temp nell'anno utente 1
-            // spostare file nella temp nell'anno utente 2
-            // spostare folder non (fam) nell'anno utente 1
-            // spostare folder non (fam) nell'anno utente 2
-            // Copiare folder (fam) nell'anno dell'altro utente
-            // Copiare foldere (fam) nell'anno dell'altro utente
-            // Mergiare i file delle folter (fam) in temp nell'anno utente 1
-            // Mergiare i file delle folter (fam) in temp nell'anno utente 2
 
             foreach (var user in settings.MoveAndOrganize.Users)
             {
@@ -129,8 +114,6 @@ namespace PicturesTool
                 MoveOrCopyFilesInDirs(dir, dest, false);
             }
         }
-
-        
 
         private void MoveOrCopyFilesInDirs(string sourceDir, string destinationDir, bool move = false)
         {

@@ -15,11 +15,10 @@ namespace CmdTools
             AddPage(new MoveFiles(this, ioWrapper));
             AddPage(new RenameFiles(this, ioWrapper));
             AddPage(new CopyPicturesBetweenUsers(this, ioWrapper));
-            //AddPage(new Page2(this, ioWrapper));
-            //AddPage(new InputPage(this, ioWrapper));
+            AddPage(new CorrectCaptureDate(this, ioWrapper));
+            
 
             SetPage<MainPage>();
         }
-
     }
 }
