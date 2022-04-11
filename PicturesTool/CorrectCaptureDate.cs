@@ -5,7 +5,7 @@ using Spectre.Console;
 
 namespace PicturesTool
 {
-    public class CorrectCaptureDate : Page
+    public sealed class CorrectCaptureDate : Page
     {
         public CorrectCaptureDate(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Correct Capture Date", program, ioWrapper)

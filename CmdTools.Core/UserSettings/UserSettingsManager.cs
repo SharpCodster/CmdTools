@@ -2,7 +2,7 @@
 
 namespace CmdTools.Core.UserSettings
 {
-    public class UserSettingsManager
+    public sealed class UserSettingsManager
     {
         public string FolderPath
         {

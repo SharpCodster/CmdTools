@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PicturesTool.Core.Models
 {
-    public class MovFile : GenericFile
+    public sealed class MovFile : GenericFile
     {
         public MovFile(FileInfo file) : base(file) { }
 

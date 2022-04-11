@@ -4,7 +4,7 @@ using Spectre.Console;
 
 namespace PicturesTool
 {
-    public class CopyPicturesBetweenUsers : Page
+    public sealed class CopyPicturesBetweenUsers : Page
     {
         public CopyPicturesBetweenUsers(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Coping Pictures between users", program, ioWrapper)

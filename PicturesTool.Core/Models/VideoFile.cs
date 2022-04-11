@@ -7,7 +7,7 @@ using TagLib.Image;
 
 namespace PicturesTool.Core.Models
 {
-    public class VideoFile : GenericFile
+    public sealed class VideoFile : GenericFile
     {
         public VideoFile(FileInfo file) : base(file) { }
 

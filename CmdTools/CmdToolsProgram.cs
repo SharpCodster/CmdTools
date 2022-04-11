@@ -3,7 +3,7 @@ using PicturesTool;
 
 namespace CmdTools
 {
-    internal class CmdToolsProgram : CmdWizard
+    internal sealed class CmdToolsProgram : CmdWizard
     {
         public CmdToolsProgram(IIOWrapper ioWrapper) : base("My Cmd Tools", true, ioWrapper)
         {
@@ -16,7 +16,7 @@ namespace CmdTools
             AddPage(new RenameFiles(this, ioWrapper));
             AddPage(new CopyPicturesBetweenUsers(this, ioWrapper));
             AddPage(new CorrectCaptureDate(this, ioWrapper));
-            
+            AddPage(new GenerateReport(this, ioWrapper));
 
             SetPage<MainPage>();
         }

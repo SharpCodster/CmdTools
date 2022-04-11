@@ -3,7 +3,7 @@ using CmdTools.Core.UserSettings;
 
 namespace PicturesTool
 {
-    public class MoveRenameMergeWizard : Page
+    public sealed class MoveRenameMergeWizard : Page
     {
         public MoveRenameMergeWizard(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Move, Rename and Merge Wizard", program, ioWrapper)

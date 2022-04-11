@@ -5,7 +5,7 @@ using PicturesTool.Core.Logics;
 
 namespace PicturesTool
 {
-    public class RenameFiles : Page
+    public sealed class RenameFiles : Page
     {
         public RenameFiles(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Renaming files", program, ioWrapper)

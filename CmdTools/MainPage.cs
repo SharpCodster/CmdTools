@@ -3,7 +3,7 @@ using PicturesTool;
 
 namespace CmdTools
 {
-    internal class MainPage : MenuPage
+    internal sealed class MainPage : MenuPage
     {
         public MainPage(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Main Page", "Which tool do you want to use?", program, ioWrapper,

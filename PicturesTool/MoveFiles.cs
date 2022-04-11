@@ -5,7 +5,7 @@ using Spectre.Console;
 
 namespace PicturesTool
 {
-    public class MoveFiles : Page
+    public sealed class MoveFiles : Page
     {
         public MoveFiles(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Moving files", program, ioWrapper)

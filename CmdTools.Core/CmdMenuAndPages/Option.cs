@@ -1,6 +1,6 @@
 ﻿namespace CmdTools.Core.CmdMenuAndPages
 {
-    public class Option
+    public sealed class Option
     {
         public string Name { get; private set; }
         public Action Callback { get; private set; }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PicturesTool.Core.Models
 {
-    public class NoTagFile : GenericFile
+    public sealed class NoTagFile : GenericFile
     {
         public NoTagFile(FileInfo file) : base(file) { }
 

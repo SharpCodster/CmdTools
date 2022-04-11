@@ -2,7 +2,7 @@
 
 namespace CmdTools.Core.CmdMenuAndPages
 {
-    public class Menu
+    public sealed class Menu
     {
         private IList<Option> Options { get; set; }
         public IIOWrapper IOWrapper { get; private set; }
