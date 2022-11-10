@@ -17,6 +17,7 @@ namespace CmdTools
             AddPage(new CopyPicturesBetweenUsers(this, ioWrapper));
             AddPage(new CorrectCaptureDate(this, ioWrapper));
             AddPage(new GenerateReport(this, ioWrapper));
+            AddPage(new RenameAndSetCaptureDate(this, ioWrapper));
 
             SetPage<MainPage>();
         }

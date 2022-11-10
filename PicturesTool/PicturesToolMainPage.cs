@@ -8,6 +8,7 @@ namespace PicturesTool
             : base("Pictures Tool", "What do you want to do?", program, ioWrapper,
                   new Option("Move, Rename and Merge Wizard", () => program.NavigateTo<MoveRenameMergeWizard>()),
                   new Option("Correct Capture Date", () => program.NavigateTo<CorrectCaptureDate>()),
+                  new Option("Rname and Set Capture Date", () => program.NavigateTo<RenameAndSetCaptureDate>()),
                   new Option("Generate report", () => program.NavigateTo<GenerateReport>()),
                   new Option("Exit", Exit)
                   )
