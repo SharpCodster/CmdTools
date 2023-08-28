@@ -8,7 +8,7 @@ namespace CmdTools.Core.CmdMenuAndPages
         {
             var rule = new Rule($"{header}");
             rule.Style = Style.Parse("lightsalmon3_1 dim");
-            rule.Alignment = Justify.Left;
+            //rule.Alignment = Justify.Left;
             AnsiConsole.Write(rule);
 
             AnsiConsole.WriteLine();

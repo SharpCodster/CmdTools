@@ -1,4 +1,5 @@
-﻿using CmdTools.Core.CmdMenuAndPages;
+﻿using BilancioTool;
+using CmdTools.Core.CmdMenuAndPages;
 using PicturesTool;
 
 namespace CmdTools
@@ -18,6 +19,10 @@ namespace CmdTools
             AddPage(new CorrectCaptureDate(this, ioWrapper));
             AddPage(new GenerateReport(this, ioWrapper));
             AddPage(new RenameAndSetCaptureDate(this, ioWrapper));
+
+            // Bilancio Tool
+            AddPage(new BilancioToolMainPage(this, ioWrapper));
+            AddPage(new GenerateForecast(this, ioWrapper));
 
             SetPage<MainPage>();
         }

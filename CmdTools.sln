@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdTools", "CmdTools\CmdTools.csproj", "{311E6BE2-F8A1-45F4-B248-0966DFA4C536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CmdTools", "CmdTools\CmdTools.csproj", "{311E6BE2-F8A1-45F4-B248-0966DFA4C536}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdTools.Core", "CmdTools.Core\CmdTools.Core.csproj", "{E40C9A3B-E3E1-4263-A37A-FC10884F8B38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CmdTools.Core", "CmdTools.Core\CmdTools.Core.csproj", "{E40C9A3B-E3E1-4263-A37A-FC10884F8B38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicturesTool", "PicturesTool\PicturesTool.csproj", "{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicturesTool", "PicturesTool\PicturesTool.csproj", "{A9330C5A-E212-4DA6-92F1-CCF2537C55AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicturesTool.Core", "PicturesTool.Core\PicturesTool.Core.csproj", "{497FFAED-BB2D-47B4-ABBB-999EF008599B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilancioTool", "BilancioTool\BilancioTool.csproj", "{36F53475-C3BF-42DF-ACEC-172B812BB132}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BilancioTool.Core", "BilancioTool.Core\BilancioTool.Core.csproj", "{EDC215D6-7DCC-4B23-90ED-71D9E41C546D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{497FFAED-BB2D-47B4-ABBB-999EF008599B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36F53475-C3BF-42DF-ACEC-172B812BB132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36F53475-C3BF-42DF-ACEC-172B812BB132}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36F53475-C3BF-42DF-ACEC-172B812BB132}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36F53475-C3BF-42DF-ACEC-172B812BB132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDC215D6-7DCC-4B23-90ED-71D9E41C546D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDC215D6-7DCC-4B23-90ED-71D9E41C546D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDC215D6-7DCC-4B23-90ED-71D9E41C546D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDC215D6-7DCC-4B23-90ED-71D9E41C546D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
