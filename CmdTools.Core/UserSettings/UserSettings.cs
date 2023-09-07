@@ -3,7 +3,17 @@
     public sealed class UserSettings
     {
         public MoveAndOrganizeSettings MoveAndOrganize { get; set; }
+        public BilancioUserSettings BilancioSettings { get; set; }
     }
+
+    public sealed class BilancioUserSettings
+    {
+        public string ImportFolder { get; set; }
+        public string BooktFolder { get; set; }
+        public string ForecastFolder { get; set; }
+    }
+
+
 
     public sealed class OneDriveSettings
     {

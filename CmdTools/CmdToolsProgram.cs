@@ -22,7 +22,8 @@ namespace CmdTools
 
             // Bilancio Tool
             AddPage(new BilancioToolMainPage(this, ioWrapper));
-            AddPage(new GenerateForecast(this, ioWrapper));
+            AddPage(new GenerateForecastPage(this, ioWrapper));
+            AddPage(new ImportDataPage(this, ioWrapper));
 
             SetPage<MainPage>();
         }

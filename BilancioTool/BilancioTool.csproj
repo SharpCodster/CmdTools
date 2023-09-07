@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="6.2.8" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BilancioTool.Core\BilancioTool.Core.csproj" />
     <ProjectReference Include="..\CmdTools.Core\CmdTools.Core.csproj" />
   </ItemGroup>

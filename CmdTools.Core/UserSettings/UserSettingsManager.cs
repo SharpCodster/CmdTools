@@ -69,6 +69,11 @@ namespace CmdTools.Core.UserSettings
                             CameraRolFolderName = "Camera Roll"
                         }
                     }
+                },
+                BilancioSettings = new BilancioUserSettings()
+                {
+                    ImportFolder = "C:\\Users\\mfusi\\OneDrive\\Documenti\\Finanza\\ImportFiles",
+                    BooktFolder = "C:\\Users\\mfusi\\OneDrive\\Documenti\\Finanza\\Libri Mastri",
                 }
             };
 
