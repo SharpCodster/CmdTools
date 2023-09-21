@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BilancioTool.Core.Tables
 {
-    public class MovimentContoTable : BaseTable<MovimentoConto>
+    public class MovimentContoTable : BaseTable<Movimento>
     {
         private string _account;
 
@@ -18,9 +18,9 @@ namespace BilancioTool.Core.Tables
         }
 
 
-        public override List<MovimentoConto> ReadTable(ExcelWorkbook workBook)
+        public override List<Movimento> ReadTable(ExcelWorkbook workBook)
         {
-            List<MovimentoConto> data = new List<MovimentoConto>();
+            List<Movimento> data = new List<Movimento>();
 
             ExcelWorksheet workSheet = (from ws in workBook.Worksheets
                                         where ws.Name == _tableName
@@ -42,10 +42,10 @@ namespace BilancioTool.Core.Tables
                     }
                     else
                     {
-                        MovimentoConto row = new MovimentoConto();
+                        Movimento row = new Movimento();
                         row.DataRegistrazione = workSheet.GetValue<DateTime>(counter, 1);
                         row.DataValuta = workSheet.GetValue<DateTime>(counter, 2);
-                        row.Causale = workSheet.GetValue<string>(counter, 3);
+                        //row.Causale = workSheet.GetValue<string>(counter, 3);
                         row.Descrizione = workSheet.GetValue<string>(counter, 4);
                         row.Importo = workSheet.GetValue<double>(counter, 5);
                         row.Account = _account;
@@ -65,37 +65,17 @@ namespace BilancioTool.Core.Tables
             }
 
 
-            //for (int i = firstRow; i <= totalRows; i++)
-            //{
-            //    MovimentoConto row = new MovimentoConto();
-            //    row.DataRegistrazione = workSheet.GetValue<DateTime>(i, 1);
-            //    row.DataValuta = workSheet.GetValue<DateTime>(i, 2);
-            //    row.Causale = workSheet.GetValue<string>(i, 3);
-            //    row.Descrizione = workSheet.GetValue<string>(i, 4);
-            //    row.Importo = workSheet.GetValue<double>(i, 5);
-
-            //    row.Account = Account;
-            //    data.Add(row);
-            //}
-
-
-
             return data;
         }
 
-
-
-
-        protected override void PopulateWorksheet(ExcelWorksheet workSheet, ExcelTable table, List<MovimentoConto> data)
+        protected override void PopulateWorksheet(ExcelWorksheet workSheet, ExcelTable table, List<Movimento> data)
         {
             throw new NotImplementedException();
         }
 
-
-
-        protected override List<MovimentoConto> ReadAllRows(ExcelWorksheet workSheet, int firstRow, int totalRows)
+        protected override List<Movimento> ReadAllRows(ExcelWorksheet workSheet, int firstRow, int totalRows)
         {
-            List<MovimentoConto> data = new List<MovimentoConto>();
+            List<Movimento> data = new List<Movimento>();
 
             return data;
         }

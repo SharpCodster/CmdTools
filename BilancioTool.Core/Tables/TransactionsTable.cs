@@ -6,12 +6,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using OfficeOpenXml.Style;
+using System.Drawing;
 
 namespace BilancioTool.Core.Tables
 {
     public class TransactionsTable : BaseTable<TransactionV4>
     {
-        public TransactionsTable() : base("TransNew", true, 8)
+
+        private Color[] customColor = 
+        {
+            Color.FromArgb(189, 215, 238),
+            Color.FromArgb(255, 230, 153)
+        };
+
+
+        public TransactionsTable() : base("Trans", true, 8)
         {
 
         }
@@ -86,10 +96,11 @@ namespace BilancioTool.Core.Tables
                                 where title.Name == _tableName
                                 select title).FirstOrDefault();
 
-            var changes = data.Where(_ => _.HasChanges).ToList();
+            var changes = data.Where(_ => _.HasChanges && !_.IsNew).ToList();
 
             foreach (var item in changes)
             {
+                workSheet.SetValue(item.ExcelRow, 1, item.Id);
                 workSheet.SetValue(item.ExcelRow, 2, item.Date);
                 workSheet.SetValue(item.ExcelRow, 4, item.Inflow);
                 workSheet.SetValue(item.ExcelRow, 5, item.Outflow);
@@ -121,6 +132,18 @@ namespace BilancioTool.Core.Tables
                     workSheet.SetValue(row, 4, newItem.Inflow);
                     workSheet.SetValue(row, 5, newItem.Outflow);
                     workSheet.SetValue(row, 7, newItem.Notes);
+
+                    for (int j = 1; j < 9; j++)
+                    {
+                        int k = i;
+                        while (k > customColor.Length - 1)
+                        {
+                            k = k - customColor.Length;
+                        }
+
+                        workSheet.Cells[row, j].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        workSheet.Cells[row, j].Style.Fill.BackgroundColor.SetColor(customColor[k]);
+                    }
                 }
             }
         }

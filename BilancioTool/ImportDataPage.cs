@@ -4,12 +4,6 @@ using CmdTools.Core.CmdMenuAndPages;
 using CmdTools.Core.UserSettings;
 using OfficeOpenXml;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace BilancioTool
 {
@@ -52,65 +46,62 @@ namespace BilancioTool
                     .AddChoices(files));
 
 
+            if (!IOWrapper.GetConfirmation($"Confirm book folder at [green]{settings.BilancioSettings.BooktFolder}[/]?"))
+            {
+                settings.BilancioSettings.BooktFolder = IOWrapper.ReadString("Import folder path:");
+            }
+
+            var year = IOWrapper.ReadInt("Wicth year do you want to import?", DateTime.Now.Year, 1900, DateTime.Now.Year);
+            var mastrinoPath = $"{settings.BilancioSettings.BooktFolder}/LibroMastro.xlsx";
+
+            List<TransactionV4> transactionsV4 = new List<TransactionV4>();
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
+            {
+                TransactionsTable tt = new TransactionsTable();
+                transactionsV4 = tt.ReadTable(package.Workbook);
+            }
+
+            var match = 0;
+            var noMatch = 0;
+
+            List<Movimento> movimenti = new List<Movimento>();
+
             if (account.StartsWith("Unicredit"))
             {
-                List<MovimentoConto> movimenti = new List<MovimentoConto>();
-
                 using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
                 {
                     MovimentContoTable tt = new MovimentContoTable(account);
                     movimenti = tt.ReadTable(package.Workbook);
                 }
+            }
 
-                if (!IOWrapper.GetConfirmation($"Confirm book folder at [green]{settings.BilancioSettings.BooktFolder}[/]?"))
+            if (account.StartsWith("Carta Credito"))
+            {
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
                 {
-                    settings.BilancioSettings.BooktFolder = IOWrapper.ReadString("Import folder path:");
+                    MovimentoCartaTable tt = new MovimentoCartaTable(account);
+                    movimenti = tt.ReadTable(package.Workbook);
                 }
+            }
 
-                var year = IOWrapper.ReadInt("Wicth year do you want to import?", DateTime.Now.Year, 1900, DateTime.Now.Year);
-                var mastrinoPath = $"{settings.BilancioSettings.BooktFolder}/Mastrino {year}.xlsx";
-
-                List<TransactionV4> transactionsV4 = new List<TransactionV4>();
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
+            foreach (var trans in movimenti.Where(_ => _.DataValuta.Year == year))
+            {
+                var alredyInserted = ExactMAtch(transactionsV4, trans);
+                
+                if (alredyInserted != null)
                 {
-                    TransactionsTable tt = new TransactionsTable();
-                    transactionsV4 = tt.ReadTable(package.Workbook);
+                    match++;
                 }
-
-                var match = 0;
-                var noMatch = 0;
-
-                foreach (var trans in movimenti.Where(_ => _.DataValuta.Year == year))
+                else
                 {
+                    List<TransactionV4> possibilities = WideMatch(transactionsV4, trans);
 
-                    var possibilities = transactionsV4.Where(_ =>
-                        _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
-                        && _.Inflow == trans.Inflow
-                        && _.Outflow == trans.Outflow
-                        && (_.Date <= trans.DataRegistrazione.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
-                        ).ToList();
-
-                    if (possibilities.Count == 1)
-                    {
-                        match++;
-                        if (possibilities[0].Date != trans.DataValuta)
-                        {
-                            possibilities[0].Date = trans.DataValuta;
-                            possibilities[0].HasChanges = true;
-                        }
-
-                        if (possibilities[0].Notes.Trim() != trans.Descrizione.Trim())
-                        {
-                            possibilities[0].Notes = trans.Descrizione.Trim();
-                            possibilities[0].HasChanges = true;
-                        }  
-                    }
-                    else
+                    if (possibilities.Count == 0)
                     {
                         noMatch++;
                         TransactionV4 newTrans = new TransactionV4()
                         {
-                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_6{noMatch}",
+                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_NM{noMatch}",
                             Date = trans.DataValuta,
                             Account = trans.Account,
                             Inflow = trans.Inflow,
@@ -121,7 +112,7 @@ namespace BilancioTool
                         transactionsV4.Add(newTrans);
                         TransactionV4 newTrans2 = new TransactionV4()
                         {
-                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_6{noMatch}",
+                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_NM{noMatch}",
                             Date = trans.DataValuta,
                             Account = "No Match",
                             Inflow = trans.Outflow,
@@ -131,179 +122,61 @@ namespace BilancioTool
                         };
                         transactionsV4.Add(newTrans2);
                     }
-                }
-
-
-                IOWrapper.WriteLine($"Matches: {match}");
-                IOWrapper.WriteLine($"No Matches: {noMatch}");
-
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
-                {
-                    TransactionsTable tt = new TransactionsTable();
-
-                    tt.UpdateTable(package.Workbook, transactionsV4);
-                    package.Save();
-                }
-
-
-                IOWrapper.WriteLine("Done");
-                
-
-
-
-            }
-
-            if (account.StartsWith("Carta Credito"))
-            {
-                List<MovimentoCarta> movimenti = new List<MovimentoCarta>();
-
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
-                {
-                    MovimentoCartaTable tt = new MovimentoCartaTable(account);
-                    movimenti = tt.ReadTable(package.Workbook);
-                }
-
-                if (!IOWrapper.GetConfirmation($"Confirm book folder at [green]{settings.BilancioSettings.BooktFolder}[/]?"))
-                {
-                    settings.BilancioSettings.BooktFolder = IOWrapper.ReadString("Import folder path:");
-                }
-
-                var year = IOWrapper.ReadInt("Wicth year do you want to import?", DateTime.Now.Year, 1900, DateTime.Now.Year);
-                var mastrinoPath = $"{settings.BilancioSettings.BooktFolder}/Mastrino {year}.xlsx";
-
-                List<TransactionV4> transactionsV4 = new List<TransactionV4>();
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
-                {
-                    TransactionsTable tt = new TransactionsTable();
-                    transactionsV4 = tt.ReadTable(package.Workbook);
-                }
-
-
-                // UPDATE ID
-                var grouped = transactionsV4.GroupBy(_ => _.Id);
-                foreach (var group in grouped)
-                {
-                    var key = group.Key;
-
-
-
-                }
-
-
-
-                var match = 0;
-                var noMatch = 0;
-                var newTransCont = 0;
-
-                foreach (var trans in movimenti.Where(_ => _.DataRegistrazione.Year == year))
-                {
-                    var currentMonth = trans.DataRegistrazione.Month;
-
-                    var possibilities = transactionsV4.Where(_ =>
-                        _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
-                        && _.Inflow == trans.Inflow
-                        && _.Outflow == trans.Outflow
-                        && _.Notes != trans.Descrizione
-                        && (_.Date.Day == 5 && (_.Date.Month == currentMonth || _.Date.Month == currentMonth - 1))
-                        && _.HasChanges == false
-                        ).OrderByDescending(_ => _.Date).ToList();
-
-
-                    if (possibilities.Count >= 1)
-                    {
-                        match++;
-                        if (possibilities[0].Date != trans.DataRegistrazione)
-                        {
-                            possibilities[0].Date = trans.DataRegistrazione;
-                            possibilities[0].HasChanges = true;
-                        }
-
-                        if (possibilities[0].Notes.Trim() != trans.Descrizione.Trim())
-                        {
-                            possibilities[0].Notes = trans.Descrizione.Trim();
-                            possibilities[0].HasChanges = true;
-                        }
-
-                        if (!possibilities[0].Id.StartsWith(trans.DataRegistrazione.ToString("yyyyMMdd")))
-                        {
-                            var newID = $"{trans.DataRegistrazione.ToString("yyyyMMdd")}_8{noMatch}";
-                            foreach (var other in transactionsV4.Where(_ => _.Id == possibilities[0].Id))
-                            {
-                                other.Id = newID;
-                                other.Date = possibilities[0].Date;
-                                other.HasChanges = true;
-                            }
-                            possibilities[0].Id = newID;
-                            possibilities[0].HasChanges = true;
-                        }
-                        
-                    }
                     else
                     {
-                        noMatch++;
+                        match++;
 
+                        var firstPossible = possibilities.OrderBy(_ => Math.Abs((_.Date - trans.DataValuta).Ticks)).FirstOrDefault();
 
-                        var possibilities2 = transactionsV4.Where(_ =>
-                        _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
-                            && _.Inflow == trans.Inflow
-                            && _.Outflow == trans.Outflow
-                            && _.Date == trans.DataRegistrazione
-                            && _.Notes.Trim() == trans.Descrizione.Trim()
-                            && _.HasChanges == false
-                            ).OrderByDescending(_ => _.Date).ToList();
-
-                        if (possibilities2.Count == 1)
+                        if (firstPossible.Date != trans.DataValuta)
                         {
-                            continue;
-
+                            firstPossible.Date = trans.DataValuta;
+                            firstPossible.HasChanges = true;
                         }
-                        //else
-                        //{
-                        //    newTransCont++;
-                        //    TransactionV4 newTrans = new TransactionV4()
-                        //    {
-                        //        Id = $"{trans.DataRegistrazione.ToString("yyyyMMdd")}_6{noMatch}",
-                        //        Date = trans.DataRegistrazione,
-                        //        Account = trans.Account,
-                        //        Inflow = trans.Inflow,
-                        //        Outflow = trans.Outflow,
-                        //        Notes = trans.Descrizione.Trim(),
-                        //        IsNew = true,
-                        //    };
-                        //    transactionsV4.Add(newTrans);
-                        //    TransactionV4 newTrans2 = new TransactionV4()
-                        //    {
-                        //        Id = newTrans.Id,
-                        //        Date = newTrans.Date,
-                        //        Account = "No Match",
-                        //        Inflow = trans.Outflow,
-                        //        Outflow = trans.Inflow,
-                        //        Notes = "",
-                        //        IsNew = true,
-                        //    };
-                        //    transactionsV4.Add(newTrans2);
-                        //}
-                        
+
+                        if (String.IsNullOrEmpty(possibilities[0].Notes) || possibilities[0].Notes.Trim() != trans.Descrizione.Trim())
+                        {
+                            firstPossible.Notes = trans.Descrizione.Trim();
+                            firstPossible.HasChanges = true;
+                        }
                     }
                 }
-
-
-                IOWrapper.WriteLine($"Matches: {match}");
-                IOWrapper.WriteLine($"No Matches: {noMatch}");
-                IOWrapper.WriteLine($"Created New: {newTransCont}");
-
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
-                {
-                    TransactionsTable tt = new TransactionsTable();
-
-                    tt.UpdateTable(package.Workbook, transactionsV4);
-                    package.Save();
-                }
-
-
-                IOWrapper.WriteLine("Done");
-
             }
+
+            IOWrapper.WriteLine($"Matches: {match}");
+            IOWrapper.WriteLine($"No Matches: {noMatch}");
+
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
+            {
+                TransactionsTable tt = new TransactionsTable();
+
+                tt.UpdateTable(package.Workbook, transactionsV4);
+                package.Save();
+            }
+
+            IOWrapper.WriteLine("Done");
+            
+        }
+
+        private TransactionV4 ExactMAtch(List<TransactionV4> transactionsV4, Movimento? trans)
+        {
+            return transactionsV4.Where(_ =>
+                                _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
+                                && _.Inflow == trans.Inflow
+                                && _.Outflow == trans.Outflow
+                                && _.Date == trans.DataValuta
+                                && _.Notes.Trim() == trans.Descrizione.Trim()
+                                ).FirstOrDefault();
+        }
+
+        private List<TransactionV4> WideMatch(List<TransactionV4> transactionsV4, Movimento? trans)
+        {
+            return transactionsV4.Where(_ =>
+                                _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
+                                && _.Inflow == trans.Inflow
+                                && _.Outflow == trans.Outflow
+                                && (_.Date <= trans.DataRegistrazione.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
+                                ).OrderBy(_ => _.Date).ToList();
         }
     }
 }

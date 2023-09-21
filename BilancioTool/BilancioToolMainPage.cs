@@ -9,8 +9,8 @@ namespace BilancioTool
             : base("Bilancio Tool", "What do you want to do?", program, ioWrapper,
                   new Option("Generate Forecastd", () => program.NavigateTo<GenerateForecastPage>()),
                   new Option("Import Data", () => program.NavigateTo<ImportDataPage>()),
-                  //new Option("Rname and Set Capture Date", () => program.NavigateTo<RenameAndSetCaptureDate>()),
-                  //new Option("Generate report", () => program.NavigateTo<GenerateReport>()),
+                  new Option("Fix Dates and Ids", () => program.NavigateTo<FixDatesAndIdsPage>()),
+                  new Option("Generate new file version", () => program.NavigateTo<CreateNewFileVersionPage>()),
                   new Option("Exit", Exit)
                   )
         {

@@ -60,10 +60,10 @@ namespace BilancioTool
                 }
             }
 
+            var yearStart = IOWrapper.ReadInt("Initial year?", DateTime.Now.Year, 2020, 2100);
             var years = IOWrapper.ReadInt("How many years do you want to forecast?", 5, 1, 100);
             var endDate = new DateTime(DateTime.Now.Year + years, 12, 31);
-            var currentDate = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)).AddDays(1); ;
-
+            var currentDate = new DateTime(yearStart, 1, 1);
 
             List<TransactionV4> forecastedData = new List<TransactionV4>();
 
@@ -100,6 +100,8 @@ namespace BilancioTool
                 }
                 currentDate = currentDate.AddDays(1);
             }
+
+
 
 
             using (ExcelPackage package = new ExcelPackage(new FileInfo(forecast)))

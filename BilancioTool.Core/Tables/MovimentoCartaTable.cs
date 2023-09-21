@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BilancioTool.Core.Tables
 {
-    public class MovimentoCartaTable : BaseTable<MovimentoCarta>
+    public class MovimentoCartaTable : BaseTable<Movimento>
     {
         private string _account;
 
@@ -18,9 +18,9 @@ namespace BilancioTool.Core.Tables
         }
 
 
-        public override List<MovimentoCarta> ReadTable(ExcelWorkbook workBook)
+        public override List<Movimento> ReadTable(ExcelWorkbook workBook)
         {
-            List<MovimentoCarta> data = new List<MovimentoCarta>();
+            List<Movimento> data = new List<Movimento>();
 
             ExcelWorksheet workSheet = (from ws in workBook.Worksheets
                                         where ws.Name == _tableName
@@ -42,10 +42,10 @@ namespace BilancioTool.Core.Tables
                     }
                     else
                     {
-                        MovimentoCarta row = new MovimentoCarta();
+                        Movimento row = new Movimento();
                         row.DataRegistrazione = workSheet.GetValue<DateTime>(counter, 1);
-                        row.OraOperazione = workSheet.GetValue<string>(counter, 2);
-                        row.DataValuta = workSheet.GetValue<DateTime?>(counter, 3);
+                        //row.OraOperazione = workSheet.GetValue<string>(counter, 2);
+                        row.DataValuta = row.DataRegistrazione; // workSheet.GetValue<DateTime?>(counter, 3);
                         row.Descrizione = workSheet.GetValue<string>(counter, 4);
                         row.Importo = workSheet.GetValue<double>(counter, 5);
                         row.Account = _account;
@@ -86,16 +86,16 @@ namespace BilancioTool.Core.Tables
 
 
 
-        protected override void PopulateWorksheet(ExcelWorksheet workSheet, ExcelTable table, List<MovimentoCarta> data)
+        protected override void PopulateWorksheet(ExcelWorksheet workSheet, ExcelTable table, List<Movimento> data)
         {
             throw new NotImplementedException();
         }
 
 
 
-        protected override List<MovimentoCarta> ReadAllRows(ExcelWorksheet workSheet, int firstRow, int totalRows)
+        protected override List<Movimento> ReadAllRows(ExcelWorksheet workSheet, int firstRow, int totalRows)
         {
-            List<MovimentoCarta> data = new List<MovimentoCarta>();
+            List<Movimento> data = new List<Movimento>();
 
             return data;
         }
