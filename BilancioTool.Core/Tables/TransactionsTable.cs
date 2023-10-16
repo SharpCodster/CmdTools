@@ -105,6 +105,8 @@ namespace BilancioTool.Core.Tables
                 workSheet.SetValue(item.ExcelRow, 4, item.Inflow);
                 workSheet.SetValue(item.ExcelRow, 5, item.Outflow);
                 workSheet.SetValue(item.ExcelRow, 7, item.Notes);
+                workSheet.SetValue(item.ExcelRow, 8, item.Tags);
+                workSheet.SetValue(item.ExcelRow, 9, item.Accounts);
             }
 
             var newItems = data.Where(_ => _.IsNew).ToList();
@@ -132,8 +134,10 @@ namespace BilancioTool.Core.Tables
                     workSheet.SetValue(row, 4, newItem.Inflow);
                     workSheet.SetValue(row, 5, newItem.Outflow);
                     workSheet.SetValue(row, 7, newItem.Notes);
+                    workSheet.SetValue(row, 8, newItem.Tags);
+                    workSheet.SetValue(row, 9, newItem.Accounts);
 
-                    for (int j = 1; j < 9; j++)
+                    for (int j = 1; j < 10; j++)
                     {
                         int k = i;
                         while (k > customColor.Length - 1)

@@ -51,7 +51,6 @@ namespace BilancioTool
                 settings.BilancioSettings.BooktFolder = IOWrapper.ReadString("Import folder path:");
             }
 
-            var year = IOWrapper.ReadInt("Wicth year do you want to import?", DateTime.Now.Year, 1900, DateTime.Now.Year);
             var mastrinoPath = $"{settings.BilancioSettings.BooktFolder}/LibroMastro.xlsx";
 
             List<TransactionV4> transactionsV4 = new List<TransactionV4>();
@@ -84,7 +83,7 @@ namespace BilancioTool
                 }
             }
 
-            foreach (var trans in movimenti.Where(_ => _.DataValuta.Year == year))
+            foreach (var trans in movimenti)
             {
                 var alredyInserted = ExactMAtch(transactionsV4, trans);
                 
@@ -98,10 +97,13 @@ namespace BilancioTool
 
                     if (possibilities.Count == 0)
                     {
+                        var id = transactionsV4.Where(_ => _.Date == trans.DataValuta).Count() + 1;
+                        string data = $"{trans.DataValuta.ToString("yyyyMMdd")}_{string.Format("{0:000}", id)}";
+
                         noMatch++;
                         TransactionV4 newTrans = new TransactionV4()
                         {
-                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_NM{noMatch}",
+                            Id = data,
                             Date = trans.DataValuta,
                             Account = trans.Account,
                             Inflow = trans.Inflow,
@@ -112,7 +114,7 @@ namespace BilancioTool
                         transactionsV4.Add(newTrans);
                         TransactionV4 newTrans2 = new TransactionV4()
                         {
-                            Id = $"{trans.DataValuta.ToString("yyyyMMdd")}_NM{noMatch}",
+                            Id = data,
                             Date = trans.DataValuta,
                             Account = "No Match",
                             Inflow = trans.Outflow,
@@ -165,7 +167,7 @@ namespace BilancioTool
                                 && _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
                                 && _.Date == trans.DataValuta
-                                && _.Notes.Trim() == trans.Descrizione.Trim()
+                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes.Trim() == trans.Descrizione.Trim())
                                 ).FirstOrDefault();
         }
 
