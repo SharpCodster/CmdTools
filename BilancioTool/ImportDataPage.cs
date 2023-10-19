@@ -97,7 +97,7 @@ namespace BilancioTool
 
                     if (possibilities.Count == 0)
                     {
-                        var id = transactionsV4.Where(_ => _.Date == trans.DataValuta).Count() + 1;
+                        var id = transactionsV4.Where(_ => _.Date == trans.DataValuta).GroupBy(_ => _.Id).Count() + 1;
                         string data = $"{trans.DataValuta.ToString("yyyyMMdd")}_{string.Format("{0:000}", id)}";
 
                         noMatch++;
