@@ -36,14 +36,15 @@ namespace BilancioTool
                 settings.BilancioSettings.ImportFolder = IOWrapper.ReadString("Import folder path:");
             }
 
-            var files = Directory.EnumerateFiles(settings.BilancioSettings.ImportFolder, "*", SearchOption.AllDirectories);
-            
+            var files = Directory.EnumerateFiles(settings.BilancioSettings.ImportFolder, "*.xlsx", SearchOption.AllDirectories);
+            var files2 = Directory.EnumerateFiles(settings.BilancioSettings.ImportFolder, "*.csv", SearchOption.AllDirectories);
+
             var file = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("What file do you want to [green]import[/]?")
                     .PageSize(10)
                     .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
-                    .AddChoices(files));
+                    .AddChoices(files2.Concat(files)));
 
 
             if (!IOWrapper.GetConfirmation($"Confirm book folder at [green]{settings.BilancioSettings.BooktFolder}[/]?"))
@@ -54,6 +55,7 @@ namespace BilancioTool
             var mastrinoPath = $"{settings.BilancioSettings.BooktFolder}/LibroMastro.xlsx";
 
             List<TransactionV4> transactionsV4 = new List<TransactionV4>();
+            
             using (ExcelPackage package = new ExcelPackage(new FileInfo(mastrinoPath)))
             {
                 TransactionsTable tt = new TransactionsTable();
@@ -67,19 +69,81 @@ namespace BilancioTool
 
             if (account.StartsWith("Unicredit"))
             {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
+                if (file.EndsWith(".csv"))
                 {
-                    MovimentContoTable tt = new MovimentContoTable(account);
-                    movimenti = tt.ReadTable(package.Workbook);
+                    using (var reader = new StreamReader(file))
+                    {
+                        bool isFirstRow = true;
+                        while (!reader.EndOfStream)
+                        {
+                            var line = reader.ReadLine();
+                            var values = line.Split(';');
+
+                            if (isFirstRow)
+                            {
+                                isFirstRow = false;
+                                continue;
+                            }
+
+                            movimenti.Add(new Movimento()
+                            {
+                                DataRegistrazione = Convert.ToDateTime(values[0]),
+                                DataValuta = Convert.ToDateTime(values[1]),
+                                Account = account,
+                                Descrizione = values[2],
+                                Importo = Convert.ToDouble(values[3])
+                            });
+                        }
+                    }
+
                 }
+                else
+                {
+                    using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
+                    {
+                        MovimentContoTable tt = new MovimentContoTable(account);
+                        movimenti = tt.ReadTable(package.Workbook);
+                    }
+                } 
             }
 
             if (account.StartsWith("Carta Credito"))
             {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
+                if (file.EndsWith(".csv"))
                 {
-                    MovimentoCartaTable tt = new MovimentoCartaTable(account);
-                    movimenti = tt.ReadTable(package.Workbook);
+                    using (var reader = new StreamReader(file))
+                    {
+                        bool isFirstRow = true;
+                        while (!reader.EndOfStream)
+                        {
+                            var line = reader.ReadLine();
+                            var values = line.Split(';');
+
+                            if (isFirstRow)
+                            {
+                                isFirstRow = false;
+                                continue;
+                            }
+
+                            movimenti.Add(new Movimento()
+                            {
+                                DataRegistrazione = Convert.ToDateTime(values[0]),
+                                DataValuta = Convert.ToDateTime(values[0]),
+                                Account = account,
+                                Descrizione = values[3],
+                                Importo = Convert.ToDouble(values[4])
+                            });
+                        }
+                    }
+
+                }
+                else
+                {
+                    using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
+                    {
+                        MovimentoCartaTable tt = new MovimentoCartaTable(account);
+                        movimenti = tt.ReadTable(package.Workbook);
+                    }
                 }
             }
 
@@ -156,8 +220,10 @@ namespace BilancioTool
                 package.Save();
             }
 
-            IOWrapper.WriteLine("Done");
-            
+            IOWrapper.GetConfirmation("Press [[Enter]] to exit");
+
+            Program.NavigateHome();
+
         }
 
         private TransactionV4 ExactMAtch(List<TransactionV4> transactionsV4, Movimento? trans)
