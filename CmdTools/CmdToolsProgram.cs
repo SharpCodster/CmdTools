@@ -25,7 +25,7 @@ namespace CmdTools
             AddPage(new GenerateForecastPage(this, ioWrapper));
             AddPage(new ImportDataPage(this, ioWrapper));
             AddPage(new FixDatesAndIdsPage(this, ioWrapper));
-            AddPage(new CreateNewFileVersionPage(this, ioWrapper));
+            AddPage(new ConsolidateFile(this, ioWrapper));
 
             SetPage<MainPage>();
         }

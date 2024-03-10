@@ -102,8 +102,10 @@ namespace BilancioTool.Core.Tables
             {
                 workSheet.SetValue(item.ExcelRow, 1, item.Id);
                 workSheet.SetValue(item.ExcelRow, 2, item.Date);
+                workSheet.SetValue(item.ExcelRow, 3, item.Account);
                 workSheet.SetValue(item.ExcelRow, 4, item.Inflow);
                 workSheet.SetValue(item.ExcelRow, 5, item.Outflow);
+                workSheet.SetValue(item.ExcelRow, 6, item.Payee);
                 workSheet.SetValue(item.ExcelRow, 7, item.Notes);
                 workSheet.SetValue(item.ExcelRow, 8, item.Tags);
                 workSheet.SetValue(item.ExcelRow, 9, item.Accounts);

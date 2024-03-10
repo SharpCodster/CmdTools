@@ -10,7 +10,7 @@ namespace BilancioTool
                   new Option("Generate Forecastd", () => program.NavigateTo<GenerateForecastPage>()),
                   new Option("Import Data", () => program.NavigateTo<ImportDataPage>()),
                   new Option("Fix Dates and Ids", () => program.NavigateTo<FixDatesAndIdsPage>()),
-                  new Option("Generate new file version", () => program.NavigateTo<CreateNewFileVersionPage>()),
+                  new Option("Consolidate File", () => program.NavigateTo<ConsolidateFile>()),
                   new Option("Exit", Exit)
                   )
         {
