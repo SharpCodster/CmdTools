@@ -91,8 +91,10 @@ namespace BilancioTool
 
                 if (currentDate.Day == 5)
                 {
-                    double total = forecastedData.Where(_ => _.Date.Year == currentDate.Year
-                        && _.Date.Month == currentDate.Month - 1
+                    DateTime pastMonth = currentDate.AddMonths(-1);
+
+                    double total = forecastedData.Where(_ => _.Date.Year == pastMonth.Year
+                        && _.Date.Month == pastMonth.Month
                         && _.Account == "Carta Credito").Sum(_ => _.Outflow);
 
                     TransactionV4 newTran1 = new TransactionV4()
