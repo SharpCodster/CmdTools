@@ -39,9 +39,9 @@ namespace BilancioTool.Core.Tables
                 row.Month = workSheet.GetValue<string>(i, 3);
                 row.Day = workSheet.GetValue<string>(i, 4);
                 row.DayOfWeek = workSheet.GetValue<string>(i, 5);
-                row.AccountFrom = workSheet.GetValue<string>(i, 6);
-                row.AccountTo = workSheet.GetValue<string>(i, 7);
-                row.Total = workSheet.GetValue<double>(i, 8);
+                row.Account = workSheet.GetValue<string>(i, 6);
+                row.Inflow = workSheet.GetValue<double>(i, 7);
+                row.Outflow = workSheet.GetValue<double>(i, 8);
 
                 data.Add(row);
             }

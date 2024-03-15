@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BilancioTool.Core.Entities
+﻿namespace BilancioTool.Core.Entities
 {
     public class ForecastDefinition
     {
@@ -14,9 +10,9 @@ namespace BilancioTool.Core.Entities
 
         public string DayOfWeek { get; set; }
 
-        public string AccountFrom { get; set; }
-        public string AccountTo { get; set; }
+        public string Account { get; set; }
 
-        public double Total { get; set; }
+        public double Inflow { get; set; }
+        public double Outflow { get; set; }
     }
 }

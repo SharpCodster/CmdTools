@@ -80,24 +80,43 @@ namespace BilancioTool
                         {
                             Id = $"{currentDate.ToString("yyyyMMdd")}_{entry.PartID}",
                             Date = currentDate,
-                            Account = entry.AccountFrom,
+                            Account = entry.Account,
                             IsNew = true,
-                            Inflow = entry.Total > 0 ? entry.Total : 0.0,
-                            Outflow = entry.Total < 0 ? -entry.Total : 0.0,
+                            Inflow = entry.Inflow,
+                            Outflow = entry.Outflow,
                         };
                         forecastedData.Add(newTran);
-                        TransactionV4 newTran2 = new TransactionV4()
-                        {
-                            Id = newTran.Id,
-                            Date = newTran.Date,
-                            Account = entry.AccountTo,
-                            IsNew = true,
-                            Inflow = newTran.Outflow,
-                            Outflow = newTran.Inflow,
-                        };
-                        forecastedData.Add(newTran2);
                     } 
                 }
+
+                if (currentDate.Day == 5)
+                {
+                    double total = forecastedData.Where(_ => _.Date.Year == currentDate.Year
+                        && _.Date.Month == currentDate.Month - 1
+                        && _.Account == "Carta Credito").Sum(_ => _.Outflow);
+
+                    TransactionV4 newTran1 = new TransactionV4()
+                    {
+                        Id = $"Carta-Credito-Cassa",
+                        Date = currentDate,
+                        Account = "Cassa",
+                        IsNew = true,
+                        Inflow = 0,
+                        Outflow = total,
+                    };
+                    forecastedData.Add(newTran1);
+                    TransactionV4 newTran2 = new TransactionV4()
+                    {
+                        Id = $"Carta-Credito-Cassa",
+                        Date = currentDate,
+                        Account = "Carta Credito",
+                        IsNew = true,
+                        Inflow = total,
+                        Outflow = 0,
+                    };
+                    forecastedData.Add(newTran2);
+                }
+
                 currentDate = currentDate.AddDays(1);
             }
 
