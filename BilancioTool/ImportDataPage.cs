@@ -119,20 +119,40 @@ namespace BilancioTool
                             var line = reader.ReadLine();
                             var values = line.Split(';');
 
+                            if (values.Length == 0)
+                            {
+                                continue;
+                            }
+
                             if (isFirstRow)
                             {
                                 isFirstRow = false;
                                 continue;
                             }
 
-                            movimenti.Add(new Movimento()
+                            if (values.Length == 6)
                             {
-                                DataRegistrazione = Convert.ToDateTime(values[0]),
-                                DataValuta = Convert.ToDateTime(values[0]),
-                                Account = account,
-                                Descrizione = values[3],
-                                Importo = Convert.ToDouble(values[4])
-                            });
+                                movimenti.Add(new Movimento()
+                                {
+                                    DataRegistrazione = Convert.ToDateTime(values[0]),
+                                    DataValuta = Convert.ToDateTime(values[0]),
+                                    Account = account,
+                                    Descrizione = values[3],
+                                    Importo = Convert.ToDouble(values[4])
+                                });
+                            }
+
+                            if (values.Length == 5)
+                            {
+                                movimenti.Add(new Movimento()
+                                {
+                                    DataRegistrazione = Convert.ToDateTime(values[0]),
+                                    DataValuta = Convert.ToDateTime(values[0]),
+                                    Account = account,
+                                    Descrizione = values[2],
+                                    Importo = Convert.ToDouble(values[3])
+                                });
+                            }
                         }
                     }
 
