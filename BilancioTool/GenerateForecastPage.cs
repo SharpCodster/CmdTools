@@ -75,8 +75,31 @@ namespace BilancioTool
                             IsNew = true,
                             Inflow = entry.Inflow,
                             Outflow = entry.Outflow,
+                            Payee = entry.Payee,
+                            Tags = entry.Tags,
+                            Notes = entry.Notes,
+                            Accounts = entry.Account
                         };
                         forecastedData.Add(newTran);
+
+                        if (entry.Autobalance)
+                        {
+                            string accounts = $"{entry.Account}|{entry.AccountTo}";
+                            newTran.Accounts = accounts;
+                            TransactionV4 newTran2 = new TransactionV4()
+                            {
+                                Id = $"{currentDate.ToString("yyyyMMdd")}_{entry.PartID}",
+                                Date = currentDate,
+                                Account = entry.AccountTo,
+                                IsNew = true,
+                                Inflow = entry.Outflow,
+                                Outflow = entry.Inflow,
+                                Payee = entry.Payee,
+                                Tags = entry.Tags,
+                                Accounts= accounts
+                            };
+                            forecastedData.Add(newTran2);
+                        }
                     } 
                 }
 
@@ -96,6 +119,7 @@ namespace BilancioTool
                         IsNew = true,
                         Inflow = 0,
                         Outflow = total,
+                        Accounts = "Carta Credito|Cassa"
                     };
                     forecastedData.Add(newTran1);
                     TransactionV4 newTran2 = new TransactionV4()
@@ -106,6 +130,7 @@ namespace BilancioTool
                         IsNew = true,
                         Inflow = total,
                         Outflow = 0,
+                        Accounts = "Carta Credito|Cassa"
                     };
                     forecastedData.Add(newTran2);
                 }

@@ -43,6 +43,17 @@ namespace BilancioTool.Core.Tables
                 row.Inflow = workSheet.GetValue<double>(i, 7);
                 row.Outflow = workSheet.GetValue<double>(i, 8);
 
+                var auto = workSheet.GetValue<string>(i, 9);
+                if (!String.IsNullOrEmpty(auto) && auto.Trim().ToLower() == "true")
+                {
+                    row.Autobalance = true;
+                    row.AccountTo = workSheet.GetValue<string>(i, 10);
+                }
+
+                row.Payee = workSheet.GetValue<string>(i, 11);
+                row.Tags = workSheet.GetValue<string>(i, 12);
+                row.Notes = workSheet.GetValue<string>(i, 13);
+
                 data.Add(row);
             }
 
