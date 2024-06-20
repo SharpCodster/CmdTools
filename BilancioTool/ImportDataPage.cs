@@ -4,6 +4,7 @@ using CmdTools.Core.CmdMenuAndPages;
 using CmdTools.Core.UserSettings;
 using OfficeOpenXml;
 using Spectre.Console;
+using System.Drawing;
 
 namespace BilancioTool
 {
@@ -26,6 +27,8 @@ namespace BilancioTool
                         "Carta Credito Sofia",
                     }));
 
+            AnsiConsole.Write(String.Format("Account: {0}", account));
+            AnsiConsole.WriteLine();
 
             UserSettingsManager settingManager = new UserSettingsManager();
             var settings = settingManager.ReadFromConfigFile();
@@ -46,6 +49,8 @@ namespace BilancioTool
                     .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
                     .AddChoices(files2.Concat(files)));
 
+            AnsiConsole.Write(String.Format("File to Import: {0}", file));
+            AnsiConsole.WriteLine();
 
             if (!IOWrapper.GetConfirmation($"Confirm book folder at [green]{settings.BilancioSettings.BooktFolder}[/]?"))
             {
@@ -137,7 +142,7 @@ namespace BilancioTool
                                     DataRegistrazione = Convert.ToDateTime(values[0]),
                                     DataValuta = Convert.ToDateTime(values[0]),
                                     Account = account,
-                                    Descrizione = values[3],
+                                    Descrizione = values[3].Trim(),
                                     Importo = Convert.ToDouble(values[4])
                                 });
                             }
@@ -149,7 +154,7 @@ namespace BilancioTool
                                     DataRegistrazione = Convert.ToDateTime(values[0]),
                                     DataValuta = Convert.ToDateTime(values[0]),
                                     Account = account,
-                                    Descrizione = values[2],
+                                    Descrizione = values[2].Trim(),
                                     Importo = Convert.ToDouble(values[3])
                                 });
                             }
@@ -169,9 +174,10 @@ namespace BilancioTool
 
             foreach (var trans in movimenti)
             {
-                var alredyInserted = ExactMAtch(transactionsV4, trans);
-                
-                if (alredyInserted != null)
+                var rowCount = HasMultiple(trans, movimenti);
+                var alredyInserted = ExactMatch(transactionsV4, trans);
+
+                if (alredyInserted.Count == rowCount)
                 {
                     match++;
                 }
@@ -181,50 +187,80 @@ namespace BilancioTool
 
                     if (possibilities.Count == 0)
                     {
-                        var id = transactionsV4.Where(_ => _.Date == trans.DataValuta).GroupBy(_ => _.Id).Count() + 1;
-                        string data = $"{trans.DataValuta.ToString("yyyyMMdd")}_{string.Format("{0:000}", id)}";
+                        for (var i = alredyInserted.Count; i < rowCount; i++)
+                        {
+                            var id = transactionsV4.Where(_ => _.Date == trans.DataValuta).GroupBy(_ => _.Id).Count() + 1;
+                            string data = $"{trans.DataValuta.ToString("yyyyMMdd")}_{string.Format("{0:000}", id)}";
 
-                        noMatch++;
-                        TransactionV4 newTrans = new TransactionV4()
-                        {
-                            Id = data,
-                            Date = trans.DataValuta,
-                            Account = trans.Account,
-                            Inflow = trans.Inflow,
-                            Outflow = trans.Outflow,
-                            Notes = trans.Descrizione.Trim(),
-                            IsNew = true,
-                        };
-                        transactionsV4.Add(newTrans);
-                        TransactionV4 newTrans2 = new TransactionV4()
-                        {
-                            Id = data,
-                            Date = trans.DataValuta,
-                            Account = "No Match",
-                            Inflow = trans.Outflow,
-                            Outflow = trans.Inflow,
-                            Notes = "",
-                            IsNew = true,
-                        };
-                        transactionsV4.Add(newTrans2);
+                            noMatch++;
+                            TransactionV4 newTrans = new TransactionV4()
+                            {
+                                Id = data,
+                                Date = trans.DataValuta,
+                                Account = trans.Account,
+                                Inflow = trans.Inflow,
+                                Outflow = trans.Outflow,
+                                Notes = trans.Descrizione.Trim(),
+                                IsNew = true,
+                            };
+                            transactionsV4.Add(newTrans);
+                            TransactionV4 newTrans2 = new TransactionV4()
+                            {
+                                Id = data,
+                                Date = trans.DataValuta,
+                                Account = "No Match",
+                                Inflow = trans.Outflow,
+                                Outflow = trans.Inflow,
+                                Notes = "",
+                                IsNew = true,
+                            };
+                            transactionsV4.Add(newTrans2);
+                        }
                     }
                     else
                     {
                         match++;
 
-                        var firstPossible = possibilities.OrderBy(_ => Math.Abs((_.Date - trans.DataValuta).Ticks)).FirstOrDefault();
-
-                        if (firstPossible.Date != trans.DataValuta)
+                        if (rowCount == 1 && possibilities.Count == 1)
                         {
-                            firstPossible.Date = trans.DataValuta;
-                            firstPossible.HasChanges = true;
+                            var firstPossible = possibilities.FirstOrDefault();
+
+                            if (firstPossible.Date != trans.DataValuta)
+                            {
+                                string oldId = firstPossible.Id;
+                                int newCount = transactionsV4.Where(_ => _.Date == trans.DataValuta).GroupBy(_ => _.Id).Count() + 1;
+
+                                string newId = $"{trans.DataValuta.ToString("yyyyMMdd")}_{string.Format("{0:000}", newCount)}";
+
+                                List<TransactionV4> toUpdate = transactionsV4.Where(_ => _.Id == oldId).ToList();
+
+                                foreach(var item in toUpdate)
+                                {
+                                    item.Id = newId;
+                                    item.Date = trans.DataValuta;
+                                    item.HasChanges = true;
+                                }    
+                            }
+                        }
+                        else
+                        {
+                            int i = 0;
                         }
 
-                        if (String.IsNullOrEmpty(possibilities[0].Notes) || possibilities[0].Notes.Trim() != trans.Descrizione.Trim())
-                        {
-                            firstPossible.Notes = trans.Descrizione.Trim();
-                            firstPossible.HasChanges = true;
-                        }
+                        //var firstPossible = possibilities.OrderBy(_ => Math.Abs((_.Date - trans.DataValuta).Ticks)).FirstOrDefault();
+
+                        //if (firstPossible.Date != trans.DataValuta)
+                        //{
+                        //    firstPossible.Date = trans.DataValuta;
+                        //    firstPossible.HasChanges = true;
+                        //}
+
+                        //if (String.IsNullOrEmpty(possibilities[0].Notes) || possibilities[0].Notes.Trim() != trans.Descrizione.Trim())
+                        //{
+                        //    firstPossible.Notes = trans.Descrizione.Trim();
+                        //    firstPossible.HasChanges = true;
+                        //}
+
                     }
                 }
             }
@@ -246,7 +282,17 @@ namespace BilancioTool
 
         }
 
-        private TransactionV4 ExactMAtch(List<TransactionV4> transactionsV4, Movimento? trans)
+        private int HasMultiple(Movimento? trans, List<Movimento> transactions)
+        {
+            return transactions.Where(_ =>
+                                _.Inflow == trans.Inflow
+                                && _.Outflow == trans.Outflow
+                                && _.DataValuta == trans.DataValuta
+                                && (_.Descrizione.Trim() == trans.Descrizione.Trim())
+                                ).Count();
+        }
+
+        private List<TransactionV4> ExactMatch(List<TransactionV4> transactionsV4, Movimento trans)
         {
             return transactionsV4.Where(_ =>
                                 _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
@@ -254,7 +300,7 @@ namespace BilancioTool
                                 && _.Outflow == trans.Outflow
                                 && _.Date == trans.DataValuta
                                 && (!String.IsNullOrEmpty(_.Notes) && _.Notes.Trim() == trans.Descrizione.Trim())
-                                ).FirstOrDefault();
+                                ).ToList();
         }
 
         private List<TransactionV4> WideMatch(List<TransactionV4> transactionsV4, Movimento? trans)
@@ -263,7 +309,8 @@ namespace BilancioTool
                                 _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
                                 && _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
-                                && (_.Date <= trans.DataRegistrazione.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
+                                && (_.Date <= trans.DataValuta.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
+                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes.Trim() == trans.Descrizione.Trim())
                                 ).OrderBy(_ => _.Date).ToList();
         }
     }
