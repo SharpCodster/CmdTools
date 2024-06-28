@@ -25,14 +25,25 @@ namespace BilancioTool
                 settings.BilancioSettings.ForecastFolder = IOWrapper.ReadString("Import folder path:");
             }
 
-            var whatIf = $"{settings.BilancioSettings.ForecastFolder}\\What If";
-            var mastro = $"{settings.BilancioSettings.ForecastFolder}\\Mastro Previsionale.xlsx";
-            var forecast = $"{settings.BilancioSettings.ForecastFolder}\\Forecast.xlsx";
-
-            var files = Directory.EnumerateFiles(whatIf, "*", SearchOption.AllDirectories);
+            var whatIfFolder = $"{settings.BilancioSettings.ForecastFolder}\\What If";
+            //var mastro = $"{settings.BilancioSettings.ForecastFolder}\\Mastro Previsionale.xlsx";
+            //var forecast = $"{settings.BilancioSettings.ForecastFolder}\\Forecast.xlsx";
 
 
-            var forecastFiles = AnsiConsole.Prompt(
+            
+            var simulationSettingsFiel = $"{settings.BilancioSettings.ForecastFolder}\\Simulations.xlsx";
+
+            var flatSimulation = new List<SimulationRow>();
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(simulationSettingsFiel)))
+            {
+                SimulationsTable tt = new SimulationsTable();
+                flatSimulation = tt.ReadTable(package.Workbook);
+            }
+
+            var avaiableSimulaitons = flatSimulation.Select(_ => _.Name).Distinct().ToList();
+
+            var forecasts
+                = AnsiConsole.Prompt(
                 new MultiSelectionPrompt<string>()
                     .Title("Select forecast files to inclide in your [green]report[/]?")
                     .PageSize(10)
@@ -40,109 +51,118 @@ namespace BilancioTool
                     .InstructionsText(
                         "[grey](Press [blue]<space>[/] to toggle a file, " +
                         "[green]<enter>[/] to accept)[/]")
-                    .AddChoices(files));
+                    .AddChoices(avaiableSimulaitons));
 
 
-            List<ForecastDefinition> definitions = new List<ForecastDefinition>();
-
-            foreach (var file in forecastFiles)
-            {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(file)))
-                {
-                    ForecastDefinitionTable tt = new ForecastDefinitionTable();
-                    definitions.AddRange(tt.ReadTable(package.Workbook));
-                }
-            }
+            var files = Directory.EnumerateFiles(whatIfFolder, "*", SearchOption.AllDirectories);
 
             var yearStart = IOWrapper.ReadInt("Initial year?", DateTime.Now.Year, 2020, 2100);
             var years = IOWrapper.ReadInt("How many years do you want to forecast?", 5, 1, 100);
             var endDate = new DateTime(DateTime.Now.Year + years, 12, 31);
             var currentDate = new DateTime(yearStart, 1, 1);
 
-            List<TransactionV4> forecastedData = new List<TransactionV4>();
 
-            while (currentDate <= endDate)
-            {
-                foreach (var entry in definitions)
+            foreach (var forecast in forecasts)
+            { 
+                var forecastFiles = flatSimulation.Where(_ => _.Name == forecast).Select(_ => _.File).ToList();
+                List<ForecastDefinition> definitions = new List<ForecastDefinition>();
+
+                foreach (var file in forecastFiles)
                 {
-                    if (PseudoCronEvaluetor.CheckExpresison(entry.Year, entry.Month, entry.Day, entry.DayOfWeek, currentDate))
+                    var definitionFile = $"{whatIfFolder}\\{file}.xlsx";
+                    using (ExcelPackage package = new ExcelPackage(new FileInfo(definitionFile)))
                     {
-                        TransactionV4 newTran = new TransactionV4()
-                        {
-                            Id = $"{currentDate.ToString("yyyyMMdd")}_{entry.PartID}",
-                            Date = currentDate,
-                            Account = entry.Account,
-                            IsNew = true,
-                            Inflow = entry.Inflow,
-                            Outflow = entry.Outflow,
-                            Payee = entry.Payee,
-                            Tags = entry.Tags,
-                            Notes = entry.Notes,
-                            Accounts = entry.Account
-                        };
-                        forecastedData.Add(newTran);
+                        ForecastDefinitionTable tt = new ForecastDefinitionTable();
+                        definitions.AddRange(tt.ReadTable(package.Workbook));
+                    }
+                }
 
-                        if (entry.Autobalance)
+                List<TransactionV4> forecastedData = new List<TransactionV4>();
+
+                while (currentDate <= endDate)
+                {
+                    foreach (var entry in definitions)
+                    {
+                        if (PseudoCronEvaluetor.CheckExpresison(entry.Year, entry.Month, entry.Day, entry.DayOfWeek, currentDate))
                         {
-                            string accounts = $"{entry.Account}|{entry.AccountTo}";
-                            newTran.Accounts = accounts;
-                            TransactionV4 newTran2 = new TransactionV4()
+                            TransactionV4 newTran = new TransactionV4()
                             {
                                 Id = $"{currentDate.ToString("yyyyMMdd")}_{entry.PartID}",
                                 Date = currentDate,
-                                Account = entry.AccountTo,
+                                Account = entry.Account,
                                 IsNew = true,
-                                Inflow = entry.Outflow,
-                                Outflow = entry.Inflow,
+                                Inflow = entry.Inflow,
+                                Outflow = entry.Outflow,
                                 Payee = entry.Payee,
                                 Tags = entry.Tags,
-                                Accounts= accounts
+                                Notes = entry.Notes,
+                                Accounts = entry.Account
                             };
-                            forecastedData.Add(newTran2);
+                            forecastedData.Add(newTran);
+
+                            if (entry.Autobalance)
+                            {
+                                string accounts = $"{entry.Account}|{entry.AccountTo}";
+                                newTran.Accounts = accounts;
+                                TransactionV4 newTran2 = new TransactionV4()
+                                {
+                                    Id = $"{currentDate.ToString("yyyyMMdd")}_{entry.PartID}",
+                                    Date = currentDate,
+                                    Account = entry.AccountTo,
+                                    IsNew = true,
+                                    Inflow = entry.Outflow,
+                                    Outflow = entry.Inflow,
+                                    Payee = entry.Payee,
+                                    Tags = entry.Tags,
+                                    Accounts = accounts
+                                };
+                                forecastedData.Add(newTran2);
+                            }
                         }
-                    } 
+                    }
+
+                    if (currentDate.Day == 5)
+                    {
+                        DateTime pastMonth = currentDate.AddMonths(-1);
+
+                        double total = forecastedData.Where(_ => _.Date.Year == pastMonth.Year
+                            && _.Date.Month == pastMonth.Month
+                            && _.Account == "Carta Credito").Sum(_ => _.Outflow);
+
+                        TransactionV4 newTran1 = new TransactionV4()
+                        {
+                            Id = $"Carta-Credito-Cassa",
+                            Date = currentDate,
+                            Account = "Cassa",
+                            IsNew = true,
+                            Inflow = 0,
+                            Outflow = total,
+                            Accounts = "Carta Credito|Cassa"
+                        };
+                        forecastedData.Add(newTran1);
+                        TransactionV4 newTran2 = new TransactionV4()
+                        {
+                            Id = $"Carta-Credito-Cassa",
+                            Date = currentDate,
+                            Account = "Carta Credito",
+                            IsNew = true,
+                            Inflow = total,
+                            Outflow = 0,
+                            Accounts = "Carta Credito|Cassa"
+                        };
+                        forecastedData.Add(newTran2);
+                    }
+
+                    currentDate = currentDate.AddDays(1);
                 }
 
-                if (currentDate.Day == 5)
+                var forecastFile = $"{settings.BilancioSettings.ForecastFolder}\\{forecast}.xlsx";
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(forecastFile)))
                 {
-                    DateTime pastMonth = currentDate.AddMonths(-1);
-
-                    double total = forecastedData.Where(_ => _.Date.Year == pastMonth.Year
-                        && _.Date.Month == pastMonth.Month
-                        && _.Account == "Carta Credito").Sum(_ => _.Outflow);
-
-                    TransactionV4 newTran1 = new TransactionV4()
-                    {
-                        Id = $"Carta-Credito-Cassa",
-                        Date = currentDate,
-                        Account = "Cassa",
-                        IsNew = true,
-                        Inflow = 0,
-                        Outflow = total,
-                        Accounts = "Carta Credito|Cassa"
-                    };
-                    forecastedData.Add(newTran1);
-                    TransactionV4 newTran2 = new TransactionV4()
-                    {
-                        Id = $"Carta-Credito-Cassa",
-                        Date = currentDate,
-                        Account = "Carta Credito",
-                        IsNew = true,
-                        Inflow = total,
-                        Outflow = 0,
-                        Accounts = "Carta Credito|Cassa"
-                    };
-                    forecastedData.Add(newTran2);
+                    TransactionsTable tt = new TransactionsTable("ForecastTrans");
+                    tt.BuildTable(package.Workbook, forecastedData, true);
+                    package.Save();
                 }
-
-                currentDate = currentDate.AddDays(1);
-            }
-
-            using (ExcelPackage package = new ExcelPackage(new FileInfo(forecast)))
-            {
-                TransactionsTable tt = new TransactionsTable("ForecastTrans");
-                tt.BuildTable(package.Workbook, forecastedData, true);
-                package.Save();
             }
         }
     }
