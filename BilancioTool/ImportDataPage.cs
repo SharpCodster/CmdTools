@@ -1,4 +1,5 @@
 ﻿using BilancioTool.Core.Entities;
+using BilancioTool.Core.Helpers;
 using BilancioTool.Core.Tables;
 using CmdTools.Core.CmdMenuAndPages;
 using CmdTools.Core.UserSettings;
@@ -95,8 +96,8 @@ namespace BilancioTool
                             {
                                 DataRegistrazione = Convert.ToDateTime(values[0]),
                                 DataValuta = Convert.ToDateTime(values[1]),
-                                Account = account,
-                                Descrizione = FormatBankDescription(values[2]),
+                                Account = account.Trim(),
+                                Descrizione = BankNoteFormatting.FormatBankDescription(values[2]),
                                 Importo = Convert.ToDouble(values[3])
                             });
                         }
@@ -142,8 +143,8 @@ namespace BilancioTool
                                 {
                                     DataRegistrazione = Convert.ToDateTime(values[0]),
                                     DataValuta = Convert.ToDateTime(values[0]),
-                                    Account = account,
-                                    Descrizione = FormatBankDescription(values[3]),
+                                    Account = account.Trim(),
+                                    Descrizione = BankNoteFormatting.FormatBankDescription(values[3]),
                                     Importo = Convert.ToDouble(values[4])
                                 });
                             }
@@ -154,8 +155,8 @@ namespace BilancioTool
                                 {
                                     DataRegistrazione = Convert.ToDateTime(values[0]),
                                     DataValuta = Convert.ToDateTime(values[0]),
-                                    Account = account,
-                                    Descrizione = values[2].Trim(),
+                                    Account = account.Trim(),
+                                    Descrizione = BankNoteFormatting.FormatBankDescription(values[2]),
                                     Importo = Convert.ToDouble(values[3])
                                 });
                             }
@@ -289,45 +290,31 @@ namespace BilancioTool
                                 _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
                                 && _.DataValuta == trans.DataValuta
-                                && (_.Descrizione.Trim() == trans.Descrizione.Trim())
+                                && (_.Descrizione == trans.Descrizione)
                                 ).Count();
         }
 
         private List<TransactionV4> ExactMatch(List<TransactionV4> transactionsV4, Movimento trans)
         {
             return transactionsV4.Where(_ =>
-                                _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
+                                _.Account == trans.Account
                                 && _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
                                 && _.Date == trans.DataValuta
-                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes.Trim() == trans.Descrizione.Trim())
+                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes == trans.Descrizione)
                                 ).ToList();
         }
 
         private List<TransactionV4> WideMatch(List<TransactionV4> transactionsV4, Movimento? trans)
         {
             return transactionsV4.Where(_ =>
-                                _.Account.ToLower().Trim() == trans.Account.ToLower().Trim()
+                                _.Account == trans.Account
                                 && _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
                                 && (_.Date <= trans.DataValuta.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
-                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes.Trim() == trans.Descrizione.Trim())
+                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes == trans.Descrizione)
                                 ).OrderBy(_ => _.Date).ToList();
         }
 
-        public static string FormatBankDescription(string input)
-        {
-            string result = input;
-            if (!String.IsNullOrEmpty(result))
-            {
-                // Rimuovi i simboli
-                result = result.Replace("*", " ").Replace("?", " ").Replace(":", " ").Replace(";", " ");
-                // Toglie gli spazi dall'inizio alla fine
-                result = result.Trim();
-                // Sostituisci due o più spazi con ';'
-                result = Regex.Replace(result, @"\s{2,}", " ");
-            }
-            return result;
-        }
     }
 }

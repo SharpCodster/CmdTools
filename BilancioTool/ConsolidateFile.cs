@@ -1,4 +1,5 @@
 ﻿using BilancioTool.Core.Entities;
+using BilancioTool.Core.Helpers;
 using BilancioTool.Core.Tables;
 using CmdTools.Core.CmdMenuAndPages;
 using CmdTools.Core.UserSettings;
@@ -45,7 +46,7 @@ namespace BilancioTool
                     tx.Date = date;
                     tx.HasChanges = true;
                 }
-                string desc = FormatBankDescription(tx.Notes);
+                string desc = BankNoteFormatting.FormatBankDescription(tx.Notes);
                 if (desc != tx.Notes)
                 {
                     tx.Notes = desc;
@@ -109,22 +110,6 @@ namespace BilancioTool
             }
 
             Program.NavigateHome();
-        }
-
-
-        public static string FormatBankDescription(string input)
-        {
-            string result = input;
-            if (!String.IsNullOrEmpty(result))
-            {
-                // Rimuovi i simboli
-                result = result.Replace("*", " ").Replace("?", " ").Replace(":", " ").Replace(";", " ");
-                // Toglie gli spazi dall'inizio alla fine
-                result = result.Trim();
-                // Sostituisci due o più spazi con ';'
-                result = Regex.Replace(result, @"\s{2,}", " ");
-            }
-            return result;
         }
     }
 }
