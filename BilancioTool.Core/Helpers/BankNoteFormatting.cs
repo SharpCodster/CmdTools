@@ -13,7 +13,8 @@ namespace BilancioTool.Core.Helpers
             if (!String.IsNullOrEmpty(result))
             {
                 // Rimuovi i simboli
-                result = result.Replace("*", " ").Replace("?", " ").Replace(":", " ").Replace(";", " ");
+                result = result.Replace("*", " ").Replace("?", " ").Replace(":", " ")
+                    .Replace(";", " ").Replace("-", " ").Replace("/", " ");
                 // Toglie gli spazi dall'inizio alla fine
                 result = result.Trim();
                 // Sostituisci due o più spazi con ';'

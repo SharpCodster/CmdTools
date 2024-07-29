@@ -10,6 +10,12 @@ namespace CmdTools
         {
             AddPage(new MainPage(this, ioWrapper));
 
+            // Bilancio Tool
+            AddPage(new BilancioToolMainPage(this, ioWrapper));
+            AddPage(new GenerateForecastPage(this, ioWrapper));
+            AddPage(new ImportDataPage(this, ioWrapper));
+            AddPage(new ConsolidateFile(this, ioWrapper));
+
             // Pictures Tool
             AddPage(new PicturesToolMainPage(this, ioWrapper));
             AddPage(new MoveRenameMergeWizard(this, ioWrapper));
@@ -20,12 +26,6 @@ namespace CmdTools
             AddPage(new GenerateReport(this, ioWrapper));
             AddPage(new RenameAndSetCaptureDate(this, ioWrapper));
 
-            // Bilancio Tool
-            AddPage(new BilancioToolMainPage(this, ioWrapper));
-            AddPage(new GenerateForecastPage(this, ioWrapper));
-            AddPage(new ImportDataPage(this, ioWrapper));
-            AddPage(new FixDatesAndIdsPage(this, ioWrapper));
-            AddPage(new ConsolidateFile(this, ioWrapper));
 
             SetPage<MainPage>();
         }

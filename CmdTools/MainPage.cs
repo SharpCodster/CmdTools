@@ -8,8 +8,8 @@ namespace CmdTools
     {
         public MainPage(ICmdWizard program, IIOWrapper ioWrapper)
             : base("Main Page", "Which tool do you want to use?", program, ioWrapper,
-                  new Option("Pictures Tool Page", () => program.NavigateTo<PicturesToolMainPage>()),
                   new Option("Bilancio Tool Page", () => program.NavigateTo<BilancioToolMainPage>()),
+                  new Option("Pictures Tool Page", () => program.NavigateTo<PicturesToolMainPage>()),
                   new Option("Exit", Exit)
                   )
         {
