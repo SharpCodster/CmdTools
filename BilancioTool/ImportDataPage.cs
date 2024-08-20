@@ -312,7 +312,7 @@ namespace BilancioTool
                                 && _.Inflow == trans.Inflow
                                 && _.Outflow == trans.Outflow
                                 && (_.Date <= trans.DataValuta.AddDays(2) && _.Date >= trans.DataValuta.AddDays(-2))
-                                && (!String.IsNullOrEmpty(_.Notes) && _.Notes == trans.Descrizione)
+                                && (!String.IsNullOrEmpty(_.Notes) && (_.Notes == trans.Descrizione || _.Notes.EndsWith(trans.Descrizione)))
                                 ).OrderBy(_ => _.Date).ToList();
         }
 
