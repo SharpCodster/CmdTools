@@ -25,6 +25,7 @@ namespace CmdTools
             AddPage(new CorrectCaptureDate(this, ioWrapper));
             AddPage(new GenerateReport(this, ioWrapper));
             AddPage(new RenameAndSetCaptureDate(this, ioWrapper));
+            AddPage(new CreateOrModifyAmmortization(this, ioWrapper));
 
 
             SetPage<MainPage>();

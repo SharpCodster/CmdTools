@@ -25,8 +25,7 @@ namespace BilancioTool
                     .PageSize(10)
                     .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
                     .AddChoices(new[] {
-                        "Unicredit", "Unicredit Sofia", "Carta Credito Marco",
-                        "Carta Credito Sofia",
+                        "Unicredit", "Carta Credito Marco", "Carta Credito Sofia",
                     }));
 
             AnsiConsole.Write(String.Format("Account: {0}", account));
