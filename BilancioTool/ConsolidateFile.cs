@@ -60,7 +60,6 @@ namespace BilancioTool
             foreach (var tx in grouped)
             {
                 var payeesList = tx.Select(x => x.Payee).Where(_ => !String.IsNullOrEmpty(_)).Distinct().ToList();
-
                 if (payeesList.Count == 1)
                 {
                     foreach (var original in tx)
@@ -76,6 +75,28 @@ namespace BilancioTool
                 {
                     string id = tx.Key;
                 }
+
+
+                var tagList = tx.Select(x => x.Tags).Where(_ => !String.IsNullOrEmpty(_)).Distinct().ToList();
+                if (tagList.Count == 1)
+                {
+                    foreach (var original in tx)
+                    {
+                        if (original.Tags != tagList[0])
+                        {
+                            original.Tags = tagList[0];
+                            original.HasChanges = true;
+                        }
+                    }
+                }
+                else if (tagList.Count > 1)
+                {
+                    string id = tx.Key;
+                }
+
+                // trova chi non è decimal
+
+                // elimina la nota del costo in caso sia uguale a quella dell'account
             }
 
 

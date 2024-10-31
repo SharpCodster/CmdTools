@@ -34,6 +34,7 @@ namespace BilancioTool
 
 
 
+
             if (!IOWrapper.GetConfirmation($"Confirm forecast folder at [green]{settings.BilancioSettings.ForecastFolder}[/]?"))
             {
                 settings.BilancioSettings.ForecastFolder = IOWrapper.ReadString("Import folder path:");
