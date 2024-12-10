@@ -1,4 +1,6 @@
-﻿namespace CmdTools.Core.UserSettings
+﻿using CmdTools.Core.Entities;
+
+namespace CmdTools.Core.UserSettings
 {
     public sealed class UserSettings
     {
@@ -11,6 +13,11 @@
         public string ImportFolder { get; set; }
         public string BooktFolder { get; set; }
         public string ForecastFolder { get; set; }
+
+        public string ProdCodioUrl { get; set; }
+        public string DevCodioUrl { get; set; }
+        public Credential DevCredential { get; set; }
+        public Credential ProdCredential { get; set; }
     }
 
 

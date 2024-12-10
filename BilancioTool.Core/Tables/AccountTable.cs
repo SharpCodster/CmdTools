@@ -23,16 +23,18 @@ namespace BilancioTool.Core.Tables
 
         protected override void PopulateWorksheet(ExcelWorksheet workSheet, ExcelTable table, List<Account> data)
         {
-            workSheet.Cells["A1"].Value = "ID";
+            workSheet.Cells["A1"].Value = "Order";
             workSheet.Cells["B1"].Value = "Name";
+            workSheet.Cells["C1"].Value = "BalanceSheetClass";
+            workSheet.Cells["D1"].Value = "CashFlowClass";
 
             for (int i = 0; i < data.Count; i++)
             {
-                workSheet.Cells[$"A{i + 2}"].Value = data[i].Id;
+                workSheet.Cells[$"A{i + 2}"].Value = data[i].Order;
                 workSheet.Cells[$"B{i + 2}"].Value = data[i].Name;
+                workSheet.Cells[$"C{i + 2}"].Value = data[i].BalanceSheetClass;
+                workSheet.Cells[$"D{i + 2}"].Value = data[i].CashFlowClass;
             }
-
-
         }
 
         protected override List<Account> ReadAllRows(ExcelWorksheet workSheet, int firstRow, int totalRows)
@@ -43,14 +45,14 @@ namespace BilancioTool.Core.Tables
             {
                 Account row = new Account();
 
-                row.Id = workSheet.GetValue<int>(i, 1);
+                row.Order = workSheet.GetValue<int>(i, 1);
                 row.Name = workSheet.GetValue<string>(i, 2);
+                row.BalanceSheetClass = workSheet.GetValue<string>(i, 3);
+                row.CashFlowClass = workSheet.GetValue<string>(i, 4);
                 row.ExcelRow = i;
                 data.Add(row);
             }
-
             return data;
-
         }
 
 

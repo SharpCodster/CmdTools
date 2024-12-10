@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CmdTools.Core.Entities;
+using Newtonsoft.Json;
 
 namespace CmdTools.Core.UserSettings
 {
@@ -74,6 +75,12 @@ namespace CmdTools.Core.UserSettings
                 {
                     ImportFolder = "C:\\Users\\mfusi\\OneDrive\\Documenti\\Finanza\\ImportFiles",
                     BooktFolder = "C:\\Users\\mfusi\\OneDrive\\Documenti\\Finanza\\Libri Mastri",
+                    ForecastFolder = "C:\\Users\\mfusi\\OneDrive\\Documenti\\Finanza\\Previsioni",
+                    DevCredential = new Credential()
+                    {
+                        Email = "Username",
+                        Password = "Password"
+                    }
                 }
             };
 
