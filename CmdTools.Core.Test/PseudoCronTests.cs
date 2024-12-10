@@ -14,7 +14,7 @@ namespace CmdTools.Core.Test
         [TestCaseSource(nameof(DivideCases))]
         public void TestSimpleExpression(string year, string month, string day, string dayOfWeek, DateTime currentDate, bool expectedResult)
         {
-            Assert.AreEqual(PseudoCronEvaluetor.CheckExpresison(year, month, day, dayOfWeek, currentDate), expectedResult);
+            Assert.That(PseudoCronEvaluetor.CheckExpresison(year, month, day, dayOfWeek, currentDate), Is.EqualTo(expectedResult));
         }
 
         public static object[] DivideCases =
