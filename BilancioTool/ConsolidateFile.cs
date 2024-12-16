@@ -93,12 +93,9 @@ namespace BilancioTool
                 {
                     string id = tx.Key;
                 }
-
                 // trova chi non è decimal
-
                 // elimina la nota del costo in caso sia uguale a quella dell'account
             }
-
 
             foreach (var tx in grouped)
             {
@@ -113,9 +110,7 @@ namespace BilancioTool
                         original.HasChanges = true;
                     }
                 }
-
             }
-
 
             using (ExcelPackage package = new ExcelPackage(new FileInfo(mastroPath)))
             {

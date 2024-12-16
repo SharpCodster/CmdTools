@@ -64,8 +64,8 @@ namespace BilancioTool
 
             var codioAccounts = codioClient.GetAsync<List<AccountDtoRead>>("mymoney/api/accounts").GetAwaiter().GetResult();
 
-            DateTime dateStart = new DateTime(2013, 1, 1);
-            DateTime dateEnd = new DateTime(2015, 12, 31);
+            DateTime dateStart = new DateTime(2012, 1, 1);
+            DateTime dateEnd = new DateTime(2012, 12, 31);
 
 
             var excelRowsToMigrate = excelLedgerList.Where(x => x.Date >= dateStart && x.Date <= dateEnd).ToList();

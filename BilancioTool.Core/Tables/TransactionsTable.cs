@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using OfficeOpenXml.Style;
 using System.Drawing;
 
@@ -13,14 +12,6 @@ namespace BilancioTool.Core.Tables
 {
     public class TransactionsTable : BaseTable<TransactionV4>
     {
-
-        private Color[] customColor = 
-        {
-            Color.FromArgb(189, 215, 238),
-            Color.FromArgb(255, 230, 153)
-        };
-
-
         public TransactionsTable() : base("Trans", true, 8)
         {
 
@@ -124,6 +115,28 @@ namespace BilancioTool.Core.Tables
 
                 table.AddRow(newItems.Count);
 
+                var colors = new Color[] {
+                    Color.LightBlue,
+                    Color.LightGreen,
+                    Color.LightCoral,
+                    Color.Bisque,
+                    Color.DeepPink,
+                    Color.LightCyan,
+                    Color.LightSlateGray,
+                    Color.LightSalmon,
+                    Color.AliceBlue,
+                    Color.MistyRose,
+                    Color.LightPink,
+                    Color.Orange,
+                    Color.Aquamarine,
+                    Color.CadetBlue,
+                    Color.SandyBrown,
+                    Color.Lavender,
+                    Color.Thistle
+                };
+                int currentColorIndex = 0;
+                string? previousValue = null;
+
                 for (int i = 0; i < newItems.Count; i++)
                 {
                     int row = totalDataRows + 1 + i;
@@ -139,16 +152,21 @@ namespace BilancioTool.Core.Tables
                     workSheet.SetValue(row, 8, newItem.Tags);
                     workSheet.SetValue(row, 9, newItem.Accounts);
 
+                    // Change color if value changes
+                    if (previousValue != newItem.Id)
+                    {
+                        currentColorIndex++;
+                        if (currentColorIndex >= colors.Length)
+                        {
+                            currentColorIndex = 0;
+                        }
+                        previousValue = newItem.Id;
+                    }
+
                     for (int j = 1; j < 10; j++)
                     {
-                        int k = i;
-                        while (k > customColor.Length - 1)
-                        {
-                            k = k - customColor.Length;
-                        }
-
                         workSheet.Cells[row, j].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        workSheet.Cells[row, j].Style.Fill.BackgroundColor.SetColor(customColor[k]);
+                        workSheet.Cells[row, j].Style.Fill.BackgroundColor.SetColor(colors[currentColorIndex]);
                     }
                 }
             }
